@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:studyhard
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 55MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME:chaudiensdk5@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:phal eczr txvl mves}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        from: ${SPRING_MAIL_USERNAME:chaudiensdk5@gmail.com}
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expirationMs: 86400000
+
+server:
+  port: 8080

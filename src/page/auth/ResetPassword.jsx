@@ -1,0 +1,179 @@
+import { VALIDATE_RESET_PASSWORD } from "@/utils/validation/yupValidate";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Loading from "@/components/ui/Loading";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEnvelope,
+  faKey,
+  faCircleExclamation,
+  faShieldHalved,
+} from "@fortawesome/free-solid-svg-icons";
+import { useFetchForgotPassword } from "@/hooks/useFetchForgotPassword";
+import { useResetPassword } from "@/hooks/useResetPassword";
+import notificationAntd from "@/utils/notifications/notificationAntd";
+const ResetPassword = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(VALIDATE_RESET_PASSWORD),
+    defaultValues: {
+      email: window.sessionStorage.getItem("email"),
+    },
+  });
+  const { setTitle } = useOutletContext();
+  useEffect(() => {
+    setTitle("Reset password");
+  }, []);
+  const [errorMessages, setErrorMessages] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const { mutate, isLoading } = useResetPassword();
+  const navigate = useNavigate();
+  const onSubmit = (data) => {
+    const dataSend = {
+      email: data.email,
+      otp: data.otp,
+      password: data.newPassword,
+    };
+    mutate(dataSend, {
+      onError: (err) => {
+        const res = err.response;
+        if (res && res.status == "400") {
+          setErrorMessages(res.data.message);
+        }
+      },
+      onSuccess: () => {
+        setIsRedirecting(true);
+        window.sessionStorage.removeItem("email");
+        notificationAntd(
+          "success",
+          "Password Changed",
+          "Your password has been changed successfully. Please log in again.",
+        );
+        setTimeout(() => {
+          navigate("/account/login");
+        }, 300);
+      },
+    });
+  };
+  if (isRedirecting) {
+    return <Loading />;
+  }
+  return (
+    <>
+      {errorMessages && (
+        <div className="flex items-center gap-3 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm transition-all">
+          <FontAwesomeIcon
+            icon={faCircleExclamation}
+            className="text-red-500"
+          />
+          <span className="font-medium">{errorMessages}</span>
+        </div>
+      )}
+      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <label className="block text-sm text-gray-500 mb-1">Email</label>
+          <div className="w-full flex items-center border border-gray-300 rounded">
+            <FontAwesomeIcon
+              icon={faEnvelope}
+              className="text-gray-400 flex-1"
+            />
+            <input
+              {...register("email")}
+              type="text"
+              disabled={true}
+              className="w-full px-3 py-2 flex-5  focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-colors"
+            />
+          </div>
+          {errors.email && (
+            <span className="text-red-500 text-sm">{errors.email.message}</span>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm text-gray-500 mb-1">Verify OTP</label>
+          <div className="w-full flex items-center border border-gray-300 rounded">
+            <FontAwesomeIcon icon={faKey} className="text-gray-400 flex-1" />
+            <input
+              {...register("otp")}
+              type="text"
+              className="w-full px-3 py-2 flex-5  focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-colors"
+            />
+          </div>
+          {errors.otp && (
+            <span className="text-red-500 text-sm">{errors.otp.message}</span>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm text-gray-500 mb-1">Password</label>
+          <div className="w-full flex items-center border border-gray-300 rounded">
+            <FontAwesomeIcon
+              icon={faShieldHalved}
+              className="text-gray-400 flex-1"
+            />
+            <input
+              {...register("newPassword")}
+              type="password"
+              className="w-full px-3 py-2 flex-5  focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-colors"
+            />
+          </div>
+          {errors.newPassword && (
+            <span className="text-red-500 text-sm">
+              {errors.newPassword.message}
+            </span>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm text-gray-500 mb-1">
+            Confirm password
+          </label>
+          <div className="w-full flex items-center border border-gray-300 rounded">
+            <FontAwesomeIcon
+              icon={faShieldHalved}
+              className="text-gray-400 flex-1"
+            />
+            <input
+              {...register("confirmPassword")}
+              type="password"
+              className="w-full px-3 py-2 flex-5  focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-colors"
+            />
+          </div>
+          {errors.confirmPassword && (
+            <span className="text-red-500 text-sm">
+              {errors.confirmPassword.message}
+            </span>
+          )}
+        </div>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-[#E93C60] hover:bg-[#d43355] cursor-pointer text-white py-2.5 rounded text-sm font-medium transition-colors mt-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <Loading size={"small"} />
+              <span>Pending ...</span>
+            </>
+          ) : (
+            "Forgot password"
+          )}
+        </button>
+      </form>
+      <div className="flex items-center my-6">
+        <div className="grow border-t border-gray-200"></div>
+        <Link
+          to={"/account/login"}
+          className="shrink-0 mx-4 text-[#6592B8] text-sm "
+        >
+          Login
+        </Link>
+        <div className="grow border-t border-gray-200"></div>
+      </div>
+    </>
+  );
+};
+export default ResetPassword;

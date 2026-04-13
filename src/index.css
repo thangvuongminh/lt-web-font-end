@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@theme {
+  --color-rainbow: #c0c1ff;
+  --color-studyhard: #908fa0;
+}
+.glass-panel {
+  background: rgba(45, 52, 73, 0.6);
+  backdrop-filter: blur(12px);
+}
+
+.text-gradient {
+  color: #c0c1ff;
+}
+body {
+  overflow-x: hidden;
+}

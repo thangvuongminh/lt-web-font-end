@@ -1,0 +1,56 @@
+services:
+  study-hard:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: studyhard:1.0.2
+    container_name: study-hard-app
+    env_file: env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/study-hard
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SERVER_PORT: 8090
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8090:8090"
+    networks:
+      - studyhard
+  mysql:
+    image: mysql:latest
+    container_name: study-hard-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: study-hard
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - studyhard
+
+  redis:
+    image: redis:latest
+    container_name: study-hard-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - studyhard
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  studyhard:
+    external: true
