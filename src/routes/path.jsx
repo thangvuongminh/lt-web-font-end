@@ -8,10 +8,47 @@ import ForgotPassword from "@/page/auth/ForgotPassword";
 import AuthLayout from "@/layout/AuthLayout";
 import ResetPasswordForm from "@/page/auth/ResetPassword";
 import ResetPassword from "@/page/auth/ResetPassword";
+import ProtectedRoute from "./ProtectedRoute";
+import Payment from "@/page/home/Payment";
+import { Button, Result } from "antd";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Navigate to="/home" replace />,
+  },
+  {
+    path: "/403",
+    element: (
+      <>
+        <Result
+          status="403"
+          title="403"
+          subTitle="Sorry, you are not authorized to access this page."
+          extra={
+            <Button type="primary" href="/">
+              Back Home
+            </Button>
+          }
+        />
+      </>
+    ),
+  },
+  {
+    path: "/404",
+    element: (
+      <>
+        <Result
+          status="404"
+          title="404"
+          subTitle="Sorry, the page you visited does not exist."
+          extra={
+            <Button type="primary" href="/">
+              Back Home
+            </Button>
+          }
+        />
+      </>
+    ),
   },
   {
     path: "/home",
@@ -23,6 +60,14 @@ const router = createBrowserRouter([
       {
         path: "/content",
         element: <ContentPage />,
+      },
+      {
+        path: "/payment",
+        element: (
+          <ProtectedRoute>
+            <Payment />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

@@ -57,7 +57,7 @@ const Login = () => {
           dispatch(login(data));
           setTimeout(() => {
             navigate("/home");
-          }, 200);
+          }, 300);
         },
       });
     }
@@ -76,7 +76,7 @@ const Login = () => {
         dispatch(login(data));
         setTimeout(() => {
           navigate("/home");
-        }, 200);
+        }, 300);
       },
     });
   };

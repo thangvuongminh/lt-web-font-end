@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Button, Result } from "antd";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 function checkRolesExist(location, roleWantCheck) {
   const roles = useSelector((state) => state.auth.roles);
   const checkRouteRole = location.pathname.includes(roleWantCheck);
@@ -11,36 +11,16 @@ function checkRolesExist(location, roleWantCheck) {
 }
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticate);
-
-  console.log(roles);
+  console.log(isAuthenticated);
   if (!isAuthenticated) {
-    <Result
-      status="404"
-      title="404"
-      subTitle="Sorry, the page you visited does not exist."
-      extra={<Button type="primary">Back Home</Button>}
-    />;
+    return <Navigate to={"/404"} replace />;
   }
   const location = useLocation();
-  if (checkRolesExist(location, "admin")) {
-    return (
-      <Result
-        status="403"
-        title="403"
-        subTitle="Sorry, you are not authorized to access this page."
-        extra={<Button type="primary">Back Home</Button>}
-      />
-    );
+  if (!checkRolesExist(location, "admin")) {
+    return <Navigate to={"/403"} replace />;
   }
-  if (checkRolesExist(location, "moderator")) {
-    return (
-      <Result
-        status="403"
-        title="403"
-        subTitle="Sorry, you are not authorized to access this page."
-        extra={<Button type="primary">Back Home</Button>}
-      />
-    );
+  if (!checkRolesExist(location, "moderator")) {
+    return <Navigate to={"/403"} replace />;
   }
   return <>{children}</>;
 };

@@ -29,7 +29,6 @@ const ForgotPassword = () => {
   const { mutate, isLoading } = useFetchForgotPassword();
   const navigate = useNavigate();
   const onSubmit = (data) => {
-    console.log("hi");
     mutate(data, {
       onError: (error) => {
         const res = error.response;

@@ -16,12 +16,13 @@ import {
 import { NavLink } from "./NavLink";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/authenticateSlice";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isAuthenticate = useSelector((state) => state.auth.isAuthenticate);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(isAuthenticate);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -31,13 +32,13 @@ const Header = () => {
       <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
         {/* --- Logo Area --- */}
         <div className="flex items-center gap-2 cursor-pointer">
-          <a href="/">
+          <Link to="/">
             <img
               src={logo}
               alt="StudyHard Logo"
               className="h-10 w-auto object-contain"
             />
-          </a>
+          </Link>
           <span className="hidden sm:block text-white font-bold tracking-tighter text-xl">
             STUDY<span className="text-sky-500">HARD</span>
           </span>
@@ -75,27 +76,27 @@ const Header = () => {
                 {/* Nhóm Đăng nhập / Đăng ký */}
                 {!isAuthenticate && (
                   <div className="flex flex-col gap-3 px-4 py-4 border-b border-gray-700">
-                    <a
-                      href="/account/login"
+                    <Link
+                      to={"/account/login"}
                       className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
                     >
                       <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
                       Đăng nhập
-                    </a>
+                    </Link>
 
-                    <a
-                      href="/account/register"
+                    <Link
+                      to={"/account/register"}
                       className="flex items-center justify-center w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
                     >
                       <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
                       Đăng ký
-                    </a>
+                    </Link>
                   </div>
                 )}
                 {isAuthenticate && (
                   <div className="flex flex-col">
-                    <a
-                      href="#nap-tien"
+                    <Link
+                      to={"/payment"}
                       className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
                     >
                       <FontAwesomeIcon
@@ -103,7 +104,7 @@ const Header = () => {
                         className="text-yellow-500 w-5"
                       />
                       <span>Nạp tiền</span>
-                    </a>
+                    </Link>
 
                     <a
                       href="#noi-dung"
@@ -129,15 +130,18 @@ const Header = () => {
 
                     <div
                       onClick={() => {
-                        dispatch(logout);
+                        dispatch(logout());
+                        setTimeout(() => {
+                          navigate("/", { replace: true });
+                        }, 400);
                       }}
-                      className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors border-t border-gray-700 mt-1"
+                      className="cursor-pointer px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors border-t border-gray-700 mt-1"
                     >
                       <FontAwesomeIcon
                         icon={faSignOutAlt}
                         className="text-red-500 w-5"
                       />
-                      <span className="text-red-400 hover:text-red-300">
+                      <span className="text-red-400 hover:text-red-300 ">
                         Đăng xuất
                       </span>
                     </div>

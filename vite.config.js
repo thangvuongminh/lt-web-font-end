@@ -8,6 +8,16 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8090",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
