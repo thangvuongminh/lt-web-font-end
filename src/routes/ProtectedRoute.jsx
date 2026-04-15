@@ -11,7 +11,6 @@ function checkRolesExist(location, roleWantCheck) {
 }
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticate);
-  console.log(isAuthenticated);
   if (!isAuthenticated) {
     return <Navigate to={"/404"} replace />;
   }

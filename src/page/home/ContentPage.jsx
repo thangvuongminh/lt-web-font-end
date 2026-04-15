@@ -20,12 +20,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "@/components/ui/NavLink";
 import { useEffect, useRef, useState } from "react";
-import {
-  COURSE_LEVELS,
-  COURSE_STATUS,
-} from "./../../utils/validation/constrant";
+
 import SideBarContent from "@/components/ui/SideBarContent";
 import ContentBlocks from "@/components/ui/contents/ContentBlocks";
+import { useFetchContents } from "@/hooks/useFetchContents";
+import Loading from "@/components/ui/Loading";
 const products = [
   {
     id: 1,
@@ -101,13 +100,27 @@ const products = [
   },
 ];
 const filterContent = {
-  status: null,
+  keyword: null,
+  minPrice: null,
+  maxPrice: null,
+  minViewCount: null,
+  maxViewCount: null,
+  level: null,
+};
+const page = {
+  page: 0,
+  size: 15,
+  sort: "createdAt",
+  direction: "desc",
 };
 const ContentPage = () => {
   const [openSortBy, setOpenSortBy] = useState(false);
+  const [contents, setContents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { mutate } = useFetchContents();
   return (
     <div>
-      <SideBarContent />
+      <SideBarContent setContents={setContents} setIsLoading={setIsLoading} />
       <section className="w-full bg-[#0b1326] min-h-screen  text-studyhard">
         <div className="w-full md:pl-64">
           <div className=" p-8">
@@ -129,12 +142,14 @@ const ContentPage = () => {
               </div>
             </div>
             {/* content */}
-            <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-8 md:mt-20">
-              <ContentBlocks />
-              <ContentBlocks />
-              <ContentBlocks />
-              <ContentBlocks />
-              <ContentBlocks />
+            <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-8 md:mt-20">
+              {isLoading ? (
+                <Loading />
+              ) : (
+                contents?.map((content) => {
+                  return <ContentBlocks key={content.id} data={content} />;
+                })
+              )}
             </div>
           </div>
         </div>

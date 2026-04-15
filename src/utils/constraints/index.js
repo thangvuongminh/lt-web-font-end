@@ -5,4 +5,4 @@ export const COURSE_LEVELS = [
   "ADVANCED",
   "EXPERT",
 ];
-export const COURSE_STATUS = ["Tất cả", "PUBLISHED", "PREMIUM"];
+export const COURSE_STATUS = ["Tất cả", "FREE", "PREMIUM"];

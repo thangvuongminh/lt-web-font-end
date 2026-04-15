@@ -1,36 +1,35 @@
 import React from "react";
 import { Eye, ShoppingCart, Bookmark, Star } from "lucide-react";
+import { useAddCart } from "./../../../hooks/useAddCart";
+import notificationAntd from "@/utils/notifications/notificationAntd";
 
-const ContentBlocks = () => {
-  const data = {
-    title: "Micro-Frontends Core",
-    price: "$149",
-    description:
-      "Enterprise-grade modular frontend architecture using Module Federation...",
-    author: "Alex Rivera",
-    rating: 4.8,
-    reviews: 120,
-    views: "2.4K",
-    sales: 842,
-    image:
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc4b?q=80&w=2000&auto=format&fit=crop", // Ảnh server minh họa
+const ContentBlocks = ({ data }) => {
+  const { mutate } = useAddCart();
+  const handleAddCart = () => {
+    mutate(data.id, {
+      onSuccess: () => {
+        notificationAntd(
+          "success",
+          "Thêm vào giỏ hàng",
+          `Sản phẩm đã được thêm thành công!`,
+        );
+      },
+    });
   };
-
   return (
     <div className=" lg:max-w-87.5  bg-[#0f172a] text-white rounded-xl overflow-hidden shadow-2xl font-sans">
-      {/* Header Image Section */}
       <div className="relative h-48">
         <img
-          src={data.image}
+          src={data.thumb}
           alt="Course"
           className="w-full h-full object-cover  opacity-60"
         />
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="bg-[#0c233c] text-[#38bdf8] text-[10px] font-bold px-2 py-1 rounded border border-[#1e293b]">
-            ADVANCED
+            {data.level}
           </span>
           <span className="bg-[#2e2e48] text-[#a78bfa] text-[10px] font-bold px-2 py-1 rounded">
-            MICROSERVICES
+            {data.categoryName}
           </span>
         </div>
       </div>
@@ -65,15 +64,15 @@ const ContentBlocks = () => {
           <div className="flex gap-4 text-gray-400 text-sm">
             <div className="flex items-center gap-1.5">
               <Eye size={16} />
-              <span>{data.views}</span>
+              <span>{data.viewCount}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <ShoppingCart size={16} />
-              <span>{data.sales}</span>
+              <span>{data.purchaseCount}</span>
             </div>
           </div>
           <button className="text-gray-400 hover:text-white transition-colors">
-            <Bookmark size={20} />
+            <Bookmark size={20} onClick={() => handleAddCart()} />
           </button>
         </div>
       </div>

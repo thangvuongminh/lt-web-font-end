@@ -11,6 +11,7 @@ import ResetPassword from "@/page/auth/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 import Payment from "@/page/home/Payment";
 import { Button, Result } from "antd";
+import CartPage from "@/page/home/CartPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -66,6 +67,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Payment />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/cart",
+        element: (
+          <ProtectedRoute>
+            <CartPage />
           </ProtectedRoute>
         ),
       },
