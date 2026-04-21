@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "react-query";
 export const useAddCart = () => {
   return useMutation({
     mutationFn: (contentId) => {
-      return instance.post("/contents/add/cart", { contentId: contentId });
+      return instance.post("/contents/add/cart", { contentId });
     },
   });
 };

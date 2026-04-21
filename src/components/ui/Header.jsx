@@ -5,6 +5,7 @@ import {
   faSearch,
   faUserCircle,
   faSignOutAlt,
+  faCartShopping,
   faBars,
   faTimes,
   faWallet,
@@ -12,6 +13,7 @@ import {
   faUserPlus,
   faFolderOpen,
   faHistory,
+  faLock,
 } from "@fortawesome/free-solid-svg-icons"; // Thêm icon đóng/mở
 import { NavLink } from "./NavLink";
 import { useDispatch, useSelector } from "react-redux";
@@ -106,27 +108,27 @@ const Header = () => {
                       <span>Nạp tiền</span>
                     </Link>
 
-                    <a
-                      href="#noi-dung"
+                    <Link
+                      to={"/cart"}
                       className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
                     >
                       <FontAwesomeIcon
-                        icon={faFolderOpen}
+                        icon={faCartShopping}
                         className="text-blue-400 w-5"
                       />
-                      <span>Nội dung của tôi</span>
-                    </a>
+                      <span>Giỏ hàng</span>
+                    </Link>
 
-                    <a
-                      href="#lich-su"
+                    <Link
+                      to="/change-password"
                       className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
                     >
                       <FontAwesomeIcon
-                        icon={faHistory}
-                        className="text-green-400 w-5"
+                        icon={faLock}
+                        className="text-blue-400 w-5"
                       />
-                      <span>Lịch sử giao dịch</span>
-                    </a>
+                      <span>Đổi mật khẩu</span>
+                    </Link>
 
                     <div
                       onClick={() => {

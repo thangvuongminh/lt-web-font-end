@@ -25,80 +25,6 @@ import SideBarContent from "@/components/ui/SideBarContent";
 import ContentBlocks from "@/components/ui/contents/ContentBlocks";
 import { useFetchContents } from "@/hooks/useFetchContents";
 import Loading from "@/components/ui/Loading";
-const products = [
-  {
-    id: 1,
-    title: "Cốt lõi Micro-Frontends",
-    price: "$149",
-    author: "Alex Rivera",
-    rating: 4.8,
-    reviews: 120,
-    views: "2.4K",
-    likes: 642,
-    category: "ADVANCED",
-    sub: "MICROSERVICES",
-  },
-  {
-    id: 2,
-    title: "Bộ cân bằng tải hiệu suất cao",
-    price: "Miễn phí",
-    author: "Stefan Müller",
-    rating: 5.0,
-    reviews: 45,
-    views: "5.1K",
-    likes: "1.2K",
-    category: "SYSTEM",
-    sub: "RUST",
-  },
-  {
-    id: 3,
-    title: "Bộ công cụ suy luận Edge",
-    price: "$79",
-    author: "Chen Wei",
-    rating: 4.2,
-    reviews: 89,
-    views: "1.8K",
-    likes: 210,
-    category: "AI/ML",
-    sub: "PYTHON",
-  },
-  {
-    id: 4,
-    title: "Engine hướng sự kiện",
-    price: "$199",
-    author: "Jordan Smith",
-    rating: 4.9,
-    reviews: 312,
-    views: "8.9K",
-    likes: "2.4K",
-    category: "BACKEND",
-    sub: "GO",
-  },
-  {
-    id: 5,
-    title: "Bộ bảo mật K8s",
-    price: "$55",
-    author: "Sarah Connor",
-    rating: 4.7,
-    reviews: 64,
-    views: "1.2K",
-    likes: 450,
-    category: "DEVOPS",
-    sub: "IAC",
-  },
-  {
-    id: 6,
-    title: "Mẫu bảo vệ xác thực (Auth-Guard)",
-    price: "Miễn phí",
-    author: "Marcus Aurelius",
-    rating: 5.0,
-    reviews: 15,
-    views: "3.7K",
-    likes: 912,
-    category: "SNIPPETS",
-    sub: "UTILITIES",
-  },
-];
 const filterContent = {
   keyword: null,
   minPrice: null,
@@ -142,15 +68,15 @@ const ContentPage = () => {
               </div>
             </div>
             {/* content */}
-            <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-8 md:mt-20">
-              {isLoading ? (
-                <Loading />
-              ) : (
-                contents?.map((content) => {
+            {isLoading ? (
+              <Loading />
+            ) : (
+              <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-8 md:mt-20">
+                {contents?.map((content) => {
                   return <ContentBlocks key={content.id} data={content} />;
-                })
-              )}
-            </div>
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>

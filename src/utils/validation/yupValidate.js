@@ -57,3 +57,23 @@ export const VALIDATE_RESET_PASSWORD = yup.object({
     .oneOf([yup.ref("newPassword"), null], "Passwords do not match")
     .required("Confirm password is required"),
 });
+export const CHANGE_PASSWORD_VALIDATE = yup.object({
+  currentPassword: yup
+    .string()
+    .required("Vui lòng nhập mật khẩu hiện tại")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+
+  newPassword: yup
+    .string()
+    .required("Vui lòng nhập mật khẩu mới")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+    .notOneOf(
+      [yup.ref("currentPassword")],
+      "Mật khẩu mới không được trùng mật khẩu hiện tại",
+    ),
+
+  confirmPassword: yup
+    .string()
+    .required("Vui lòng xác nhận mật khẩu mới")
+    .oneOf([yup.ref("newPassword")], "Mật khẩu xác nhận không khớp"),
+});

@@ -14,6 +14,8 @@ const ContentBlocks = ({ data }) => {
           `Sản phẩm đã được thêm thành công!`,
         );
       },
+      // onError: (err) => {
+      // },
     });
   };
   return (

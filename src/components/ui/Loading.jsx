@@ -5,7 +5,7 @@ const Loading = ({ size }) => {
     return <Spin indicator={<LoadingOutlined spin />} size={size} />;
   }
   return (
-    <div className="min-w-screen  min-h-screen flex justify-center items-center">
+    <div className="w-full  min-h-screen flex justify-center items-center">
       <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
     </div>
   );

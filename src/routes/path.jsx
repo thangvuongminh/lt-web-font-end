@@ -12,6 +12,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Payment from "@/page/home/Payment";
 import { Button, Result } from "antd";
 import CartPage from "@/page/home/CartPage";
+import ChangePassword from "@/page/auth/ChangePassword";
+import ProfilePage from "@/page/home/ProfilePage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,16 +67,34 @@ const router = createBrowserRouter([
       {
         path: "/payment",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requireRole={["CREATOR", "CONSUMER"]}>
             <Payment />
           </ProtectedRoute>
         ),
       },
       {
-        path: "/cart",
+        path: "/change-password/*",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute
+            requireRole={["CREATOR", "CONSUMER", "ADMIN", "MODERATOR"]}
+          >
+            <ChangePassword />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/cart/*",
+        element: (
+          <ProtectedRoute requireRole={["CREATOR", "CONSUMER"]}>
             <CartPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute requireRole={["CREATOR", "CONSUMER"]}>
+            <ProfilePage />
           </ProtectedRoute>
         ),
       },
@@ -100,6 +120,7 @@ const router = createBrowserRouter([
         path: "reset-password",
         element: <ResetPassword />,
       },
+
       // {
       //   path: "payout",
       //   element: <Payout />,

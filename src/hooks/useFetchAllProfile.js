@@ -2,11 +2,10 @@ import instance from "@/config/axiosConfig";
 import { QUERY_KEY } from "@/config/queryConfig";
 import { useQuery } from "react-query";
 
-export const useFetchAllCategory = () =>
+export const useFetchAllProfile = () =>
   useQuery({
-    queryKey: QUERY_KEY.getAllCategory,
+    queryKey: [QUERY_KEY.getProfile],
     queryFn: async () => {
-      return (await instance.get("/categories/getAll", { isPublic: true }))
-        ?.data?.data;
+      return await instance.get(`/profile/get`, { isPublic: false });
     },
   });
