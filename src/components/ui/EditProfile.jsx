@@ -9,25 +9,52 @@ import {
   faChevronDown,
   faLock,
   faMicrochip,
+  faTag,
 } from "@fortawesome/free-solid-svg-icons";
+import notificationAntd from "@/utils/notifications/notificationAntd";
+import { useUpdateProfile } from "@/hooks/useUpdateContent";
+import { useQueryClient } from "react-query";
+import { QUERY_KEY } from "@/config/queryConfig";
 
 const EditProfile = ({ setEditProfile, userProfile }) => {
+  const queryClient = useQueryClient();
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      fullName: "Alex Chen",
-      company: "CyberDyne Analytics",
-      location: "Neo-Tokyo Grid 4",
-      dob: "2045-10-23",
-      gender: "Unspecified / Classified",
-      bio: "Senior Data Architect specializing in predictive matrix modeling and deep learning neural networks. Currently optimizing quantum routing protocols for Sector 7 logistics.",
+      nickName: userProfile?.nickName,
+      fullName: userProfile?.fullName,
+      company: userProfile?.company,
+      address: userProfile?.address,
+      birthDate: userProfile?.birthDate,
+      gender: userProfile?.gender,
+      bio: userProfile?.bio,
     },
   });
 
   const bioContent = watch("bio");
-  const onSubmit = (data) => console.log(data);
+  const { mutate } = useUpdateProfile();
+  const onSubmit = (data) => {
+    mutate(data, {
+      onSuccess: () => {
+        notificationAntd(
+          "success",
+          "Update profile success",
+          "Your profile has been updated successful",
+        );
+        queryClient.invalidateQueries({ queryKey: QUERY_KEY.getProfile });
+        setEditProfile(false);
+      },
+      onError: () => {
+        notificationAntd(
+          "error",
+          "Update profile failed",
+          "Your profile could not be updated. Please try again.",
+        );
+      },
+    });
+  };
 
   return (
-    <div className="fixed z-50 inset-0   bg-black/60 flex items-center justify-center p-4">
+    <div className="fixed z-50 inset-0 animate-modal-backdrop bg-black/60 flex items-center justify-center p-4">
       <div className="w-full max-w-lg animate-modal-content bg-[#161b22] border border-gray-800 rounded-lg shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-6 flex justify-between items-start">
@@ -53,6 +80,24 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
             <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em]">
               <FontAwesomeIcon icon={faMicrochip} />
               <span>Personal Intel</span>
+            </div>
+
+            {/* Nickname */}
+            <div className="space-y-2">
+              <label className="block text-[11px] text-gray-500 font-semibold uppercase">
+                Nickname
+              </label>
+              <div className="relative">
+                <FontAwesomeIcon
+                  icon={faTag}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600"
+                />
+                <input
+                  {...register("nickName")}
+                  placeholder="e.g. shadow_dev"
+                  className="w-full bg-[#0d1117] border border-gray-800 rounded pl-11 pr-4 py-2.5 text-gray-300 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
             </div>
 
             {/* Full Name */}
@@ -86,7 +131,7 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
             {/* Location */}
             <div className="space-y-2">
               <label className="block text-[11px] text-gray-500 font-semibold uppercase">
-                Base Location
+                Base address
               </label>
               <div className="relative">
                 <FontAwesomeIcon
@@ -94,7 +139,7 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600"
                 />
                 <input
-                  {...register("location")}
+                  {...register("address")}
                   className="w-full bg-[#0d1117] border border-gray-800 rounded pl-11 pr-4 py-2.5 text-gray-300 focus:outline-none focus:border-purple-500 transition-colors"
                 />
               </div>
@@ -109,7 +154,7 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
                 <div className="relative">
                   <input
                     type="date"
-                    {...register("dob")}
+                    {...register("birthDate")}
                     className="w-full bg-[#0d1117] border border-gray-800 rounded px-4 py-2.5 text-gray-300 focus:outline-none focus:border-purple-500 transition-colors appearance-none"
                   />
                   <FontAwesomeIcon
@@ -127,9 +172,9 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
                     {...register("gender")}
                     className="w-full bg-[#0d1117] border border-gray-800 rounded px-4 py-2.5 text-gray-300 focus:outline-none focus:border-purple-500 transition-colors appearance-none cursor-pointer"
                   >
-                    <option>Unspecified / Classified</option>
-                    <option>Male</option>
-                    <option>Female</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
                   </select>
                   <FontAwesomeIcon
                     icon={faChevronDown}

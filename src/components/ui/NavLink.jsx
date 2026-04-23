@@ -1,4 +1,4 @@
-export const NavLink = ({ children, linkChildren = "#" }) => (
+export const MyNavLink = ({ children, linkChildren = "#" }) => (
   <a
     href={linkChildren}
     className="relative text-[#908fa0] hover:text-white transition-all duration-300 font-medium group text-sm"

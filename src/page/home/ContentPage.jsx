@@ -18,7 +18,6 @@ import {
   faHeart,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavLink } from "@/components/ui/NavLink";
 import { useEffect, useRef, useState } from "react";
 
 import SideBarContent from "@/components/ui/SideBarContent";

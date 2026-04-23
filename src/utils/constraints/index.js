@@ -6,3 +6,4 @@ export const COURSE_LEVELS = [
   "EXPERT",
 ];
 export const COURSE_STATUS = ["Tất cả", "FREE", "PREMIUM"];
+export const GENDER = ["MALE", "FEMALE", "OTHER"];

@@ -17,7 +17,6 @@ import {
   faHeart,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavLink } from "@/components/ui/NavLink";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { COURSE_LEVELS, COURSE_STATUS } from "@utils/constraints";
 import { useForm } from "react-hook-form";

@@ -5,4 +5,5 @@ export const QUERY_KEY = {
   getAllCarts: () => ["getAllCarts"],
   getAvatar: () => ["getAvatar"],
   getProfile: () => ["profile"],
+  getNickname: (nickname) => ["nickname", nickname],
 };

@@ -14,6 +14,7 @@ import { Button, Result } from "antd";
 import CartPage from "@/page/home/CartPage";
 import ChangePassword from "@/page/auth/ChangePassword";
 import ProfilePage from "@/page/home/ProfilePage";
+import EditProfile from "@/components/ui/EditProfile";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -91,12 +92,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "profile",
-        element: (
-          <ProtectedRoute requireRole={["CREATOR", "CONSUMER"]}>
-            <ProfilePage />
-          </ProtectedRoute>
-        ),
+        path: "/user/:nickname",
+        element: <ProfilePage />,
       },
     ],
   },

@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Thêm useState
+import React, { useEffect, useState } from "react"; // Thêm useState
 import logo from "@images/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,20 +15,37 @@ import {
   faHistory,
   faLock,
 } from "@fortawesome/free-solid-svg-icons"; // Thêm icon đóng/mở
-import { NavLink } from "./NavLink";
+import { MyNavLink } from "./NavLink";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/authenticateSlice";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useLogout } from "@/hooks/useLogout";
+import { useFetchNickname } from "@/hooks/useFetchNickname";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isAuthenticate = useSelector((state) => state.auth.isAuthenticate);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { mutate } = useLogout();
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
+  const roles = useSelector((state) => state.auth.roles);
+  const [isAppearProfile, setAppearProfile] = useState(false);
+  const { data, refetch } = useFetchNickname();
+  useEffect(() => {
+    if (isAuthenticate) {
+      if (roles.includes("CREATOR")) {
+        setAppearProfile(true);
+      }
+    }
+  }, [isAuthenticate, roles]);
+  useEffect(() => {
+    if (roles.includes("CREATOR")) {
+      refetch();
+    }
+  }, [roles]);
   return (
     <nav className="  w-full sticky top-0 z-50 bg-[#050b18]/80 backdrop-blur-xl border-b border-white/5">
       <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
@@ -47,10 +64,10 @@ const Header = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-10">
-          <NavLink>Community</NavLink>
-          <NavLink linkChildren={"/content"}>Content</NavLink>
-          <NavLink>Forum</NavLink>
-          <NavLink>Resources</NavLink>
+          <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
+          <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
+          <MyNavLink>Forum</MyNavLink>
+          <MyNavLink>Resources</MyNavLink>
         </div>
 
         {/* --- Action Area (Search & Account) --- */}
@@ -118,7 +135,20 @@ const Header = () => {
                       />
                       <span>Giỏ hàng</span>
                     </Link>
-
+                    {isAppearProfile && (
+                      <Link
+                        to={`/user/${data?.data?.data}`}
+                        className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors border-b border-gray-700/50"
+                      >
+                        <FontAwesomeIcon
+                          icon={faUserCircle}
+                          className="text-blue-400 w-5"
+                        />
+                        <span className="font-semibold text-gray-100">
+                          Hồ sơ
+                        </span>
+                      </Link>
+                    )}
                     <Link
                       to="/change-password"
                       className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
@@ -132,10 +162,7 @@ const Header = () => {
 
                     <div
                       onClick={() => {
-                        dispatch(logout());
-                        setTimeout(() => {
-                          navigate("/", { replace: true });
-                        }, 400);
+                        mutate();
                       }}
                       className="cursor-pointer px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors border-t border-gray-700 mt-1"
                     >
@@ -162,10 +189,10 @@ const Header = () => {
       </div>
       {isMenuOpen && (
         <div className="md:hidden bg-[#050b18] border-b border-white/5 px-6 py-4 flex flex-col gap-4 animate-in slide-in-from-top duration-300">
-          <NavLink>Community</NavLink>
-          <NavLink linkChildren={"/content"}>Content</NavLink>
-          <NavLink>Forum</NavLink>
-          <NavLink>Resources</NavLink>
+          <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
+          <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
+          <MyNavLink>Forum</MyNavLink>
+          <MyNavLink>Resources</MyNavLink>
 
           <div className="flex lg:hidden items-center bg-[#0f172a] border border-white/10 px-4 py-2 rounded-lg mt-2">
             <FontAwesomeIcon

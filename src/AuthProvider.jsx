@@ -12,7 +12,7 @@ const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         const res = await axios.post(
-          "api/user/account/refreshToken",
+          "/api/user/account/refreshToken",
           {},
           { withCredentials: true },
         );

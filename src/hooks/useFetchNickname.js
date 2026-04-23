@@ -2,11 +2,11 @@ import instance from "@/config/axiosConfig";
 import { QUERY_KEY } from "@/config/queryConfig";
 import { useQuery } from "react-query";
 
-export const useFetchAllProfile = (nickname) =>
+export const useFetchNickname = () =>
   useQuery({
-    queryKey: [QUERY_KEY.getProfile(nickname)],
+    queryKey: QUERY_KEY.getNickname,
     queryFn: async () => {
-      return await instance.get(`/profile/nickname/${nickname}`);
+      return await instance.get("/profile/get/nickname", { isPublic: false });
     },
-    enabled: !!nickname,
+    enabled: false,
   });

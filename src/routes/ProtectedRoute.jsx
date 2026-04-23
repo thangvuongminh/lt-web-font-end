@@ -3,6 +3,9 @@ import { Button, Result } from "antd";
 import { Navigate, useLocation } from "react-router-dom";
 function checkRolesExist(requireRole, roles) {
   let isExistRole = false;
+  if (typeof requireRole === "string") {
+    return roles.includes(requireRole.toUpperCase());
+  }
   requireRole.forEach((roleWantCheck) => {
     if (roles.includes(roleWantCheck.toUpperCase())) {
       isExistRole = true;
