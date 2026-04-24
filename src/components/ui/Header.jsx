@@ -67,7 +67,7 @@ const Header = () => {
           <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
           <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
           <MyNavLink>Forum</MyNavLink>
-          <MyNavLink>Resources</MyNavLink>
+          <MyNavLink linkChildren={"/become-creator"}>Become-creator</MyNavLink>
         </div>
 
         {/* --- Action Area (Search & Account) --- */}
@@ -192,7 +192,7 @@ const Header = () => {
           <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
           <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
           <MyNavLink>Forum</MyNavLink>
-          <MyNavLink>Resources</MyNavLink>
+          <MyNavLink linkChildren={"/become-creator"}>Become-creator</MyNavLink>
 
           <div className="flex lg:hidden items-center bg-[#0f172a] border border-white/10 px-4 py-2 rounded-lg mt-2">
             <FontAwesomeIcon

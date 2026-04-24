@@ -5,7 +5,6 @@ export const getFieldRole = (token) => {
     const decode = jwtDecode(token);
     let roles = [];
     Object.values(decode.roles).map((role) => roles.push(role));
-    console.log(decode);
     return [decode.roles, decode.userId];
   } catch (err) {
     return null;

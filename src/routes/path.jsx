@@ -15,6 +15,7 @@ import CartPage from "@/page/home/CartPage";
 import ChangePassword from "@/page/auth/ChangePassword";
 import ProfilePage from "@/page/home/ProfilePage";
 import EditProfile from "@/components/ui/EditProfile";
+import BecomeCreator from "@/page/home/BecomeCreator";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -70,6 +71,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requireRole={["CREATOR", "CONSUMER"]}>
             <Payment />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/become-creator",
+        element: (
+          <ProtectedRoute requireRole={"CREATOR"}>
+            <BecomeCreator />
           </ProtectedRoute>
         ),
       },

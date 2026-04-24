@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 
 export const useFetchAllCart = () =>
   useQuery({
-    queryKey: [QUERY_KEY.getAllCarts],
+    queryKey: [QUERY_KEY.getAllCarts()],
     queryFn: async () => {
       return await instance.get(`/contents/cart`);
     },
