@@ -17,12 +17,16 @@ export const useLogout = () => {
       );
     },
     onSuccess: () => {
-      dispatch(logout());
       navigate("/", { replace: true });
+      setTimeout(() => {
+        dispatch(logout());
+      }, 100);
     },
     onError: () => {
-      dispatch(logout());
       navigate("/", { replace: true });
+      setTimeout(() => {
+        dispatch(logout());
+      }, 100);
     },
   });
 };

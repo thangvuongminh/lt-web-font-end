@@ -10,3 +10,13 @@ export const getFieldRole = (token) => {
     return null;
   }
 };
+export const capitalize = (str) => {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+export const formatCurrency = (amount, currency = "VND", locale = "vi-VN") => {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(amount);
+};

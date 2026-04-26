@@ -16,6 +16,9 @@ import ChangePassword from "@/page/auth/ChangePassword";
 import ProfilePage from "@/page/home/ProfilePage";
 import EditProfile from "@/components/ui/EditProfile";
 import BecomeCreator from "@/page/home/BecomeCreator";
+import ProtectedRouteV2 from "./ProtectedRouteV2";
+import CreatorLayout from "@/layout/CreatorLayout";
+import CreateContentCreator from "@/page/creator/CreateContentCreator";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -60,6 +63,15 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
+    element: <CreatorLayout />,
+    children: [
+      {
+        path: "/content/management",
+        element: <CreateContentCreator />,
+      },
+    ],
+  },
+  {
     element: <PageLayout />,
     children: [
       {
@@ -77,9 +89,9 @@ const router = createBrowserRouter([
       {
         path: "/become-creator",
         element: (
-          <ProtectedRoute requireRole={"CREATOR"}>
+          <ProtectedRouteV2 requireRole={"CONSUMER"}>
             <BecomeCreator />
-          </ProtectedRoute>
+          </ProtectedRouteV2>
         ),
       },
       {

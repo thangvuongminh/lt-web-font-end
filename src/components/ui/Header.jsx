@@ -34,10 +34,12 @@ const Header = () => {
   const roles = useSelector((state) => state.auth.roles);
   const [isAppearProfile, setAppearProfile] = useState(false);
   const { data, refetch } = useFetchNickname();
+  let isCreator = false;
   useEffect(() => {
     if (isAuthenticate) {
       if (roles.includes("CREATOR")) {
         setAppearProfile(true);
+        isCreator = true;
       }
     }
   }, [isAuthenticate, roles]);
@@ -67,7 +69,13 @@ const Header = () => {
           <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
           <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
           <MyNavLink>Forum</MyNavLink>
-          <MyNavLink linkChildren={"/become-creator"}>Become-creator</MyNavLink>
+          {isCreator ? (
+            <MyNavLink linkChildren={"/become-creator"}>
+              Become-creator
+            </MyNavLink>
+          ) : (
+            <MyNavLink linkChildren={"/content/management"}>Content</MyNavLink>
+          )}
         </div>
 
         {/* --- Action Area (Search & Account) --- */}

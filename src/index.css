@@ -6,7 +6,7 @@
   --color-rainbow: #c0c1ff;
   --color-studyhard: #908fa0;
 }
-@keyframes modal-fade-in {
+@keyframes anime-fade-in {
   from {
     opacity: 0;
   }
@@ -15,7 +15,7 @@
   }
 }
 
-@keyframes modal-zoom-in {
+@keyframes anime-zoom-in {
   from {
     opacity: 0;
     transform: scale(0.95) translateY(10px);
@@ -27,11 +27,11 @@
 }
 
 .animate-modal-backdrop {
-  animation: modal-fade-in 0.8s ease-out forwards;
+  animation: anime-fade-in 0.8s ease-out forwards;
 }
 
 .animate-modal-content {
-  animation: modal-zoom-in 0.6s forwards;
+  animation: anime-zoom-in 0.6s forwards;
 }
 .glass-panel {
   background: rgba(45, 52, 73, 0.6);

@@ -22,6 +22,8 @@ import { COURSE_LEVELS, COURSE_STATUS } from "@utils/constraints";
 import { useForm } from "react-hook-form";
 import { useFetchContents } from "@/hooks/useFetchContents";
 import { useFetchAllCategory } from "@/hooks/useFetchAllCategory";
+import { capitalize } from "@/utils/systems/sysFuc";
+import AppDropdown from "./AppDropdown";
 const SideBarContent = ({ setContents, setIsLoading }) => {
   const { register, watch, handleSubmit } = useForm({
     defaultValues: {
@@ -70,36 +72,6 @@ const SideBarContent = ({ setContents, setIsLoading }) => {
 
     return data;
   }, [...watchedFields, filterContent]);
-  const dropDownCategory = useRef(null);
-  const dropDownLevel = useRef(null);
-  const capitalize = (str) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-  useEffect(() => {
-    const handleOnClick = (event) => {
-      if (
-        dropDownCategory.current &&
-        !dropDownCategory.current.contains(event.target)
-      ) {
-        setOpenCategory(false);
-      }
-    };
-    const handleOnClickLevel = (event) => {
-      if (
-        dropDownLevel.current &&
-        !dropDownLevel.current.contains(event.target)
-      ) {
-        setOpenLevel(false);
-      }
-    };
-    document.addEventListener("mousedown", handleOnClick);
-    document.addEventListener("mousedown", handleOnClickLevel);
-    return () => {
-      document.removeEventListener("mousedown", handleOnClick);
-      document.removeEventListener("mousedown", handleOnClickLevel);
-    };
-  }, []);
   const { mutateAsync, isLoading } = useFetchContents();
   useEffect(() => {
     const fetchData = async () => {
@@ -174,88 +146,39 @@ const SideBarContent = ({ setContents, setIsLoading }) => {
               placeholder="Max"
             />
           </div>
-          {/* Trạng thái */}
-          <div className="mb-3">Trạng thái</div>
-          <div
-            ref={dropDownCategory}
-            onClick={() => setOpenCategory(!openCategory)}
-            className="relative group  border text-sm flex justify-between items-center w-full px-5 py-1 mt-2 rounded border-[#908FA0]/40 cursor-pointer "
-          >
-            <span>{capitalize(filterContent.category)}</span>
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              className="animate-bounce  "
+          {
+            <AppDropdown
+              title={"Category"}
+              nameDropDown={"category"}
+              openDropdown={openCategory}
+              setOpenDropDown={setOpenCategory}
+              data={categorys}
+              currentValue={filterContent.category}
+              action={(item) =>
+                setFilterContent({
+                  ...filterContent,
+                  category: item,
+                })
+              }
             />
-            <ul
-              className={`absolute left-0 top-full w-full z-50
-                   transition-all duration-300 ease-out
-                   ${openCategory ? "opacity-100 pointer-events-auto translate-y-0.5" : "-translate-y-2 opacity-0 pointer-events-none"}`}
-            >
-              {categorys
-                .filter(
-                  (category_detail) =>
-                    category_detail != filterContent.category,
-                )
-                .map((category_detail, index) => {
-                  return (
-                    <li
-                      key={index}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenCategory(false);
-                        setFilterContent({
-                          ...filterContent,
-                          category: category_detail,
-                        });
-                      }}
-                      className="px-5 py-1 block w-full    hover:bg-[#1e3a5f]  hover:text-[#7eb8f7]  bg-[#0f0f1a] text-white/50 border-b-[0.05px] border-[#2e3347]  cursor-pointer"
-                    >
-                      {capitalize(category_detail)}
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-
+          }
           {/* Level */}
-          <div className="mb-3">Level</div>
-          <div
-            ref={dropDownLevel}
-            onClick={() => setOpenLevel(!openLevel)}
-            className="relative group  border text-sm flex justify-between items-center w-full px-5 py-1 mt-2 rounded border-[#908FA0]/40 cursor-pointer "
-          >
-            <span>{capitalize(filterContent.level)}</span>
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              className="animate-bounce  "
+          {
+            <AppDropdown
+              title={"Level"}
+              nameDropDown={"level"}
+              openDropdown={openLevel}
+              setOpenDropDown={setOpenLevel}
+              data={COURSE_LEVELS}
+              currentValue={filterContent.level}
+              action={(item) =>
+                setFilterContent({
+                  ...filterContent,
+                  level: item,
+                })
+              }
             />
-            <ul
-              className={`absolute left-0 top-full w-full z-50
-                   transition-all duration-300 ease-out
-                   ${openLevel ? "opacity-100 pointer-events-auto translate-y-0.5" : "-translate-y-2 opacity-0 pointer-events-none"}`}
-            >
-              {COURSE_LEVELS.filter(
-                (level_detail) => level_detail != filterContent.level,
-              ).map((level_detail, index) => {
-                return (
-                  <li
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenLevel(false);
-                      setFilterContent({
-                        ...filterContent,
-                        level: level_detail,
-                      });
-                    }}
-                    className="px-5 py-1 block w-full    hover:bg-[#1e3a5f]  hover:text-[#7eb8f7]  bg-[#0f0f1a] text-white/50 border-b-[0.05px] border-[#2e3347]  cursor-pointer"
-                  >
-                    {capitalize(level_detail)}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          }
           {/* Lượt xem  */}
           <div className="mb-3">View</div>
           <div className="flex items-center gap-3 w-full">
