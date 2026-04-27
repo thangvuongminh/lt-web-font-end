@@ -24,34 +24,37 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { COURSE_CREATE_VALIDATE } from "@/utils/validation/yupValidate";
 import { formatCurrency } from "@/utils/systems/sysFuc";
+import { useCreateContent } from "./../../hooks/useCreateContent";
+import notificationAntd from "@/utils/notifications/notificationAntd";
 const queryClient = new QueryClient();
 const CreateContentCreator = () => {
   const [activeStep, setActiveStep] = useState(1);
   const [openCategory, setOpenCategory] = useState(false);
   const [openLevel, setOpenLevel] = useState(false);
-  const { data } = useFetchAllCategory();
+  const { data: allCategory } = useFetchAllCategory();
+  const [message, setMessage] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
-    resolver: yupResolver.apply(COURSE_CREATE_VALIDATE),
+    resolver: yupResolver(COURSE_CREATE_VALIDATE),
     defaultValues: {
       title: "",
-      description: "",
+      desc: "",
       price: 0,
       thumb: null,
-      ytb: null,
     },
   });
   const categorys = useMemo(() => {
-    const res = data?.map((category) => category.name) || [];
+    const res = allCategory?.map((category) => category.name) || [];
     return res;
-  }, [data]);
+  }, [allCategory]);
+  const { mutate } = useCreateContent();
   const allLevel = useMemo(() => {
     return COURSE_LEVELS.filter((item) => item !== "Tất cả");
   }, [JSON.stringify(COURSE_LEVELS)]);
-  console.log(categorys[0]);
   const [courseInfo, setCourseInfo] = useState({
     category: categorys[0],
     level: allLevel[0],
@@ -146,10 +149,47 @@ const CreateContentCreator = () => {
       ),
     );
   };
-  const onSubmit = (data) => {};
+  const onSubmit = (data) => {
+    console.log(data);
+    const { id } = allCategory.find(
+      (item) => item.name === courseInfo.category,
+    );
+    let formData = new FormData();
+    const formRequest = {
+      title: data.title,
+      description: data.desc,
+      contentLevel: courseInfo.level.toUpperCase(),
+      price: data.price.toString(),
+      categoryId: id,
+      thumb: data.thumb,
+    };
+    mutate(data, {
+      onSuccess: () => {
+        notificationAntd(
+          "success",
+          "Create course successful",
+          "The course was successfully created!",
+          reset(),
+          setCourseInfo({
+            category: categorys[0],
+            level: allLevel[0],
+          }),
+        );
+      },
+      onError: (err) => {
+        const res = err.response?.data?.message;
+        setMessage(res);
+      },
+    });
+  };
   return (
     <div className="bg-[#1C1D1F] w-full text-white min-h-screen flex flex-col md:pl-64">
       {/* SIDEBAR NAVIGATION (Nằm trong nội dung chính) */}
+      {message && (
+        <div className="mb-6 px-4 py-3 rounded-lg bg-[#FFF5F5] border border-[#F87171] text-[#EF4444] text-sm">
+          {message}
+        </div>
+      )}
       <div className="max-w-5xl w-full mx-auto p-8">
         <div className="flex gap-8 border-b border-[#3E4143] mb-8">
           <button
@@ -196,7 +236,6 @@ const CreateContentCreator = () => {
                   Description
                 </label>
                 <textarea
-                  name="description"
                   rows="4"
                   {...register("desc")}
                   className="w-full bg-[#1C1D1F] border border-[#3E4143] p-3 focus:border-purple-500 outline-none"
@@ -232,7 +271,7 @@ const CreateContentCreator = () => {
                     nameDropDown={"level"}
                     openDropdown={openLevel}
                     setOpenDropDown={setOpenLevel}
-                    data={COURSE_LEVELS}
+                    data={allLevel}
                     currentValue={courseInfo.level}
                     action={(item) =>
                       setCourseInfo({
@@ -242,68 +281,79 @@ const CreateContentCreator = () => {
                     }
                   />
                 }
-              </div>
-              <div className="flex gap-3 flex-col lg:flex-row">
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-bold mb-2">
-                    <FontAwesomeIcon icon={faTag} className="text-blue-500" />
-                    <span>Price</span>
-                    <span className="font-normal text-gray-500 flex items-center gap-1">
-                      (<FontAwesomeIcon icon={faInfoCircle} size="xs" /> 1000
-                      VND = 1{" "}
-                      <FontAwesomeIcon
-                        icon={faCoins}
-                        size="xs"
-                        className="text-yellow-500"
-                      />
-                      )
-                    </span>
-                    <span className="font-normal text-green-600 ml-1">
-                      (0 <FontAwesomeIcon icon={faExchangeAlt} size="xs" />{" "}
-                      Free)
-                    </span>
-                  </label>
-                  <input
-                    type="number"
-                    {...register("price")}
-                    className="w-full bg-[#1C1D1F] border border-[#3E4143] p-3 focus:border-purple-500 outline-none"
-                  />
-                  {errors.price && (
-                    <p className="text-red-500 text-xs mt-2">
-                      {errors.price.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grow">
-                  <div>
+                <div className="flex flex-col md:flex-row w-full gap-6 items-start">
+                  {/* Phần Thumbnail - Chiếm 2 phần không gian */}
+                  <div className="flex-2 w-full">
                     <label className="block text-sm font-bold mb-2 text-gray-300">
-                      Link youtube
+                      Course Thumbnail
                     </label>
-                    <div className="flex w-full bg-[#1C1D1F] border border-[#3E4143] p-3 focus-within:border-purple-500 items-center gap-3">
-                      <FontAwesomeIcon
-                        icon={faLink}
-                        className="text-gray-400"
-                      />
-
-                      {/* Đường kẻ ngăn cách */}
-                      <div className="h-6 border-r border-[#3E4143]"></div>
-
+                    <div className="relative">
                       <input
-                        {...register("ytb")}
-                        className="outline-none bg-transparent flex-1"
-                        placeholder="e.g. Learn Architecture from Scratch"
+                        type="file"
+                        accept="image/*"
+                        {...register("thumb")}
+                        className="w-full bg-[#1C1D1F] border border-[#3E4143] p-2.25 text-sm text-gray-400 
+                   focus:border-purple-500 outline-none cursor-pointer
+                   file:mr-4 file:py-1.5 file:px-4
+                   file:rounded-sm file:border-0 file:text-xs file:font-semibold
+                   file:bg-[#3E4143] file:text-white
+                   hover:file:bg-purple-600 file:transition-colors"
                       />
-                      {errors.ytb && (
-                        <p className="text-red-500 text-xs mt-2">
-                          {errors.ytb.message}
-                        </p>
-                      )}
                     </div>
+                    {errors.thumb && (
+                      <p className="text-red-500 text-[11px] mt-2 italic">
+                        {errors.thumb.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Phần Price - Chiếm 1 phần không gian */}
+                  <div className="flex-1 w-full">
+                    <label className="flex flex-wrap items-center gap-x-2 text-sm font-bold mb-2 text-gray-300">
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon
+                          icon={faTag}
+                          className="text-blue-500"
+                        />
+                        <span>Price</span>
+                      </div>
+
+                      {/* Thông tin phụ cho nhỏ lại và mờ hơn để tránh rối mắt */}
+                      <div className="flex items-center gap-1 text-[10px] font-normal text-gray-500 bg-[#2D2F31] px-2 py-0.5 rounded-full">
+                        <FontAwesomeIcon
+                          icon={faInfoCircle}
+                          className="scale-75"
+                        />
+                        1k VND = 1{" "}
+                        <FontAwesomeIcon
+                          icon={faCoins}
+                          className="text-yellow-500 scale-75"
+                        />
+                      </div>
+
+                      <span className="text-[10px] font-normal text-green-500 ml-auto">
+                        (0 = Free)
+                      </span>
+                    </label>
+
+                    <input
+                      type="number"
+                      placeholder="0"
+                      {...register("price")}
+                      className="w-full bg-[#1C1D1F] border border-[#3E4143] p-3 text-sm text-gray-400 
+                 focus:border-purple-500 outline-none transition-all"
+                    />
+
+                    {errors.price && (
+                      <p className="text-red-500 text-[11px] mt-2 italic">
+                        {errors.price.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
               <button
-                onClick={() => setActiveStep(2)}
+                type="submit"
                 className="bg-[#A435F0] py-3 px-8 font-bold self-start hover:bg-[#8710D8]"
               >
                 Create content

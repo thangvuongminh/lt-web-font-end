@@ -95,6 +95,15 @@ export const COURSE_CREATE_VALIDATE = yup.object({
   title: yup.string().required("Title not null"),
   desc: yup.string().required("Desc not null"),
   price: yup.number().required("Price not null"),
-  thumb: yup.number().required("Thumb not null"),
-  ytb: yup.string().required("Link youtube not null"),
+  thumb: yup
+    .mixed()
+    .required("Please choose image")
+    .test(
+      "fileSize",
+      "The image is smaller than 10MB",
+      (value) => value?.[0]?.size <= 10 * 1024 * 1024,
+    )
+    .test("fileType", "Accept JPG, PNG, PDF, JPEG", (value) =>
+      ["image/jpeg", "image/png", "image/webp"].includes(value?.[0]?.type),
+    ),
 });
