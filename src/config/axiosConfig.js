@@ -1,7 +1,8 @@
-import { login } from "@/store/authenticateSlice";
+import { login, logout } from "@/store/authenticateSlice";
 import { store } from "@/store/store";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { replace } from "react-router-dom";
 
 const instance = axios.create({
   baseURL: "/api",
@@ -23,6 +24,10 @@ instance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (error.response?.status === 401) {
+      store.dispatch(logout());
+      window.location.replace("/login");
+    }
     const originalRequest = error.config;
     if (originalRequest.isPublic) return Promise.reject(error);
     if (error.response.status == 401 && !originalRequest.retry) {

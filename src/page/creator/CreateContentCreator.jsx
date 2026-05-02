@@ -24,8 +24,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { COURSE_CREATE_VALIDATE } from "@/utils/validation/yupValidate";
 import { formatCurrency } from "@/utils/systems/sysFuc";
-import { useCreateContent } from "./../../hooks/useCreateContent";
+
 import notificationAntd from "@/utils/notifications/notificationAntd";
+import { useCreateContent } from "@/hooks/creator/useCreateContent";
 const queryClient = new QueryClient();
 const CreateContentCreator = () => {
   const [activeStep, setActiveStep] = useState(1);
@@ -150,20 +151,17 @@ const CreateContentCreator = () => {
     );
   };
   const onSubmit = (data) => {
-    console.log(data);
     const { id } = allCategory.find(
       (item) => item.name === courseInfo.category,
     );
     let formData = new FormData();
-    const formRequest = {
-      title: data.title,
-      description: data.desc,
-      contentLevel: courseInfo.level.toUpperCase(),
-      price: data.price.toString(),
-      categoryId: id,
-      thumb: data.thumb,
-    };
-    mutate(data, {
+    formData.append("title", data.title);
+    formData.append("description", data.desc);
+    formData.append("contentLevel", courseInfo.level.toUpperCase());
+    formData.append("price", data.price.toString());
+    formData.append("categoryId", id);
+    formData.append("thumb", data.thumb[0]);
+    mutate(formData, {
       onSuccess: () => {
         notificationAntd(
           "success",

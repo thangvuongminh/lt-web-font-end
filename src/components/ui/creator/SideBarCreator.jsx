@@ -4,19 +4,22 @@ import {
   faHexagon,
   faBookOpen,
   faPlusCircle,
+  faBook,
   faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
-const NavItem = ({ icon, label, active }) => {
+import { icon } from "@fortawesome/fontawesome-svg-core";
+import { Link, useLocation } from "react-router-dom";
+const NavItem = ({ icon, label, active, link }) => {
   return (
-    <li
+    <Link
+      to={link}
       className={`group flex items-center gap-3.5 rounded-lg px-4 py-3.5 text-base font-medium transition-all duration-300 cursor-pointer 
         ${
           active
-            ? "bg-[#2A2B3A] text-white" // Nền tím đậm và chữ trắng cho active state
-            : "text-[#B9BBBE] hover:bg-[#1A1B2A] hover:text-white" // Màu chữ xám mặc định, nền tối khi hover
+            ? "bg-[#2A2B3A] text-white"
+            : "text-[#B9BBBE] hover:bg-[#1A1B2A] hover:text-white"
         }`}
     >
-      {/* Cần ép icon sang màu tím đậm khi active */}
       <FontAwesomeIcon
         icon={icon}
         className={`w-5 h-5 text-xl ${active ? "text-[#975BFE]" : "text-[#7B7E84]"}`} // Icon xám/tím tương ứng
@@ -31,15 +34,21 @@ const NavItem = ({ icon, label, active }) => {
       {active && (
         <div className="absolute left-0 h-8 w-[3px] rounded-r-full bg-[#975BFE]" />
       )}
-    </li>
+    </Link>
   );
 };
 const SideBarCreator = () => {
+  const { pathname } = useLocation();
   const [activeItem, setActiveItem] = useState("Create New Course");
   const menuItems = [
-    { label: "My Courses", icon: faBookOpen },
-    { label: "Create New Course", icon: faPlusCircle },
-    { label: "Analytics", icon: faChartBar },
+    { label: "My Courses", icon: faBookOpen, link: null },
+    {
+      label: "Create New Course",
+      icon: faPlusCircle,
+      link: "/content/create",
+    },
+    { label: "Block content", icon: faBook, link: "/content/management" },
+    { label: "Analytics", icon: faChartBar, link: null },
   ];
   return (
     // Wrapper Sidebar - Nền tối chính
@@ -62,17 +71,18 @@ const SideBarCreator = () => {
 
       {/* 2. Menu Section */}
       <nav className="flex-1">
-        <ul className="space-y-1.5">
+        <div className="space-y-1.5">
           {menuItems.map((item) => (
-            <div key={item.label} onClick={() => setActiveItem(item.label)}>
+            <div key={item.label}>
               <NavItem
                 icon={item.icon}
                 label={item.label}
-                active={item.label === activeItem}
+                active={item.link === pathname}
+                link={item.link}
               />
             </div>
           ))}
-        </ul>
+        </div>
       </nav>
     </div>
   );

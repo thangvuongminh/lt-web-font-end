@@ -1,13 +1,12 @@
 import React from "react";
 import { Eye, ShoppingCart, Bookmark } from "lucide-react";
-import { useAddCart } from "./../../../hooks/useAddCart";
 import notificationAntd from "@/utils/notifications/notificationAntd";
 import defaultAvatar from "@images/defaultAvatar.png";
 import { Link } from "react-router-dom";
+import { useAddCart } from "@/hooks/useAddCart";
 
 const ContentBlocks = ({ data }) => {
   const { mutate } = useAddCart();
-
   const handleAddCart = () => {
     mutate(data.id, {
       onSuccess: () => {
@@ -24,7 +23,7 @@ const ContentBlocks = ({ data }) => {
     // THÊM: flex flex-col h-full để card luôn cao bằng nhau trong Grid
     <div className="flex flex-col h-full lg:max-w-87.5 bg-[#0f172a] text-white rounded-xl overflow-hidden shadow-2xl font-sans border border-gray-800">
       {/* Thumbnail Area */}
-      <div className="relative h-48 flex-shrink-0">
+      <div className="relative h-48 shrink-0">
         <img
           src={data.thumb}
           alt="Course"

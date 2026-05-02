@@ -16,12 +16,14 @@ import ChangePassword from "@/page/auth/ChangePassword";
 import ProfilePage from "@/page/home/ProfilePage";
 import EditProfile from "@/components/ui/EditProfile";
 import BecomeCreator from "@/page/home/BecomeCreator";
-import ProtectedRouteV2 from "./ProtectedRouteV2";
 import CreatorLayout from "@/layout/CreatorLayout";
 import CreateContentCreator from "@/page/creator/CreateContentCreator";
+import ProtectedRouteV2 from "./ProtectedRouteV2";
+import BlockContentCreator from "@/page/creator/BlockContentCreator";
+import ContentDetail from "@/page/home/ContentDetail";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/about-us",
     element: <Navigate to="/home" replace />,
   },
   {
@@ -66,8 +68,20 @@ const router = createBrowserRouter([
     element: <CreatorLayout />,
     children: [
       {
+        path: "/content/create",
+        element: (
+          <ProtectedRoute requireRole={"CREATOR"}>
+            <CreateContentCreator />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/content/management",
-        element: <CreateContentCreator />,
+        element: (
+          <ProtectedRoute requireRole={"CREATOR"}>
+            <BlockContentCreator />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -95,6 +109,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/content/study/:contentId",
+        element: (
+          <ProtectedRoute requireRole={["CONSUMER", "CREATOR"]}>
+            <ContentDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/change-password/*",
         element: (
           <ProtectedRoute
@@ -119,7 +141,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "account",
+    path: "/account",
     element: <AuthLayout />,
     children: [
       {
@@ -138,31 +160,6 @@ const router = createBrowserRouter([
         path: "reset-password",
         element: <ResetPassword />,
       },
-
-      // {
-      //   path: "payout",
-      //   element: <Payout />,
-      // },
-      // {
-      //   path: "payoutadmin",
-      //   element: <Payoutadmin />,
-      // },
-      // {
-      //   path: "payouthistory",
-      //   element: <Payouthistory />,
-      // },
-      // {
-      //   path: "forgot-password/sentcomplete",
-      //   element: <Sentcomplete />,
-      // },
-      // {
-      //   path: "sentcomplete",
-      //   element: <Sentcomplete />,
-      // },
-      // {
-      //   path: "update-password",
-      //   element: <UpdatePassword />,
-      // },
     ],
   },
 ]);

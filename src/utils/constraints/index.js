@@ -5,5 +5,11 @@ export const COURSE_LEVELS = [
   "ADVANCED",
   "EXPERT",
 ];
-export const COURSE_STATUS = ["Tất cả", "FREE", "PREMIUM"];
+export const COURSE_STATUS = [
+  "DRAFT",
+  "PENDING_REVIEW",
+  "APPROVED",
+  "REJECTED",
+  "PUBLISHED",
+];
 export const GENDER = ["MALE", "FEMALE", "OTHER"];
