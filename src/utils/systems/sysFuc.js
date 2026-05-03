@@ -20,3 +20,11 @@ export const formatCurrency = (amount, currency = "VND", locale = "vi-VN") => {
     currency,
   }).format(amount);
 };
+export const formatYoutubeLink = (url) => {
+  if (!url) return "";
+  const afterV = url.split("v=")[1];
+
+  if (!afterV) return url;
+  const videoId = afterV.split("&")[0];
+  return `https://www.youtube.com/embed/${videoId}`;
+};

@@ -1,28 +1,51 @@
-const LessonList = ({ title, time, completed, active }) => {
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faLock } from "@fortawesome/free-solid-svg-icons";
+import LessonItem from "./LessonItem";
+
+const LessonList = ({ blocks }) => {
+  const [open, setOpen] = useState(false);
+  const isLocked = !blocks?.isFree;
+
+  const handleOnClick = () => {
+    if (isLocked) return;
+    setOpen(!open);
+  };
+
   return (
     <div
-      className={`flex items-center p-3 rounded-xl transition ${active ? "bg-purple-500/10 border border-purple-500/30" : "hover:bg-white/5"}`}
+      onClick={handleOnClick}
+      className={`py-2 transition-all
+        ${isLocked ? "text-gray-400 grayscale cursor-not-allowed" : "text-gray-500 hover:text-gray-300 cursor-pointer"}
+      `}
     >
-      <div className="mr-3">
-        {completed ? (
-          <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-500" />
-        ) : active ? (
-          <div className="w-4 h-4 rounded-full border-2 border-purple-500 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-          </div>
-        ) : (
-          <FontAwesomeIcon icon={faCircle} className="text-gray-700 text-xs" />
+      <div className="flex items-center space-x-3">
+        {isLocked && <FontAwesomeIcon icon={faLock} className="text-xs" />}
+
+        <div
+          className={`text-sm  flex justify-between items-center font-medium ${open ? "text-purple-400" : ""}`}
+        >
+          <span>
+            Module {blocks?.position}: {blocks?.title}
+          </span>
+        </div>
+        {!isLocked && (
+          <FontAwesomeIcon
+            icon={faChevronDown}
+            className={`text-xs transition-transform ${open ? "rotate-180" : ""}`}
+          />
         )}
       </div>
-      <div className="flex-1">
-        <p className={`text-xs ${active ? "text-white" : "text-gray-400"}`}>
-          {title}
-        </p>
-        <p className="text-[10px] text-gray-600 mt-0.5 tracking-wide">
-          <span className="mr-1">🕒</span> {time}
-        </p>
-      </div>
+
+      {open && !isLocked && (
+        <div className="animate-modal-content mt-3 space-y-2 origin-top">
+          {blocks?.children?.map((block, index) => (
+            <LessonItem blockChildren={block} key={index} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
+
 export default LessonList;

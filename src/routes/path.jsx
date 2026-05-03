@@ -117,6 +117,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/course/:courseId/lesson/:lessonId",
+        element: (
+          <ProtectedRoute requireRole={["CONSUMER", "CREATOR"]}>
+            <ContentDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/change-password/*",
         element: (
           <ProtectedRoute

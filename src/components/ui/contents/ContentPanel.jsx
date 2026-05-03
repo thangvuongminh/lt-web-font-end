@@ -8,6 +8,9 @@ import {
   faLock,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+import LessonList from "./LessonList";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 const LessonItem = ({ title, time, completed, active }) => (
   <div
     className={`flex items-center p-3 rounded-xl transition ${active ? "bg-purple-500/10 border border-purple-500/30" : "hover:bg-white/5"}`}
@@ -33,16 +36,10 @@ const LessonItem = ({ title, time, completed, active }) => (
     </div>
   </div>
 );
-const ModuleItem = ({ title, subtitle }) => (
-  <div className="flex justify-between items-center text-gray-500 hover:text-gray-300 cursor-pointer">
-    <div className="text-sm">
-      <p className="text-[10px] uppercase tracking-wider">{title}</p>
-      <p className="font-medium">{subtitle}</p>
-    </div>
-    <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-  </div>
-);
 const ContentPanel = () => {
+  const { contentId } = useParams();
+  const blocksObj =
+    useSelector((state) => state.contentDetail.byId)[contentId] || [];
   return (
     <div className="col-span-12 lg:col-span-4">
       <div className="bg-[#161b22]/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 sticky top-6">
@@ -58,48 +55,11 @@ const ContentPanel = () => {
           <div className="bg-purple-500 h-1.5 rounded-full w-[24%]"></div>
         </div>
 
-        {/* Modules */}
-        <div className="space-y-4">
-          <ModuleItem title="Module 1" subtitle="Foundation Principles" />
-          <ModuleItem title="Module 2" subtitle="Typography & Grid Systems" />
-
-          {/* Active Module */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center text-purple-400 text-sm font-medium">
-              <span>Module 3: Advanced Components</span>
-              <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-            </div>
-
-            <div className="space-y-1 mt-3">
-              <LessonItem
-                title="1. The Anatomy of a Button"
-                time="08:15"
-                completed
-              />
-              <LessonItem
-                title="2. Input States & Validation"
-                time="11:30"
-                completed
-              />
-              <LessonItem title="3. Complex Tables" time="15:40" completed />
-              <LessonItem
-                title="4. Building Glassmorphic UI Systems"
-                time="12:45"
-                active
-              />
-              <LessonItem title="5. Advanced Animations" time="22:10" />
-            </div>
-          </div>
-
-          <div className="pt-4 flex items-center justify-between text-gray-600 grayscale">
-            <div className="flex items-center space-x-3">
-              <FontAwesomeIcon icon={faLock} />
-              <div className="text-sm">
-                <p>Module 4</p>
-                <p className="text-xs">Design Handoff Strategies</p>
-              </div>
-            </div>
-          </div>
+        {/* Modules - có scroll */}
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+          {Object.entries(blocksObj)?.map(([key, value], index) => {
+            return <LessonList blocks={value} key={index} />;
+          })}
         </div>
       </div>
     </div>
