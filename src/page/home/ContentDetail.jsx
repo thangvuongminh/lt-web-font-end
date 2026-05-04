@@ -16,23 +16,24 @@ import { useGetCourseDetail } from "./../../hooks/useGetCourseDetail";
 import Loading from "@/components/ui/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { getDetailCourse } from "@/store/blocksSlice";
+import { useGetBlockDetail } from "@/hooks/useGetBlockDetail";
+import { formatYoutubeLink } from "@/utils/systems/sysFuc";
 
 const ContentDetail = () => {
   const { contentId } = useParams();
   const { data, isLoading } = useGetCourseDetail(contentId);
   const dispatch = useDispatch();
   const infoCourseDetail = data?.data?.data;
+
   useEffect(() => {
     if (infoCourseDetail) {
       dispatch(getDetailCourse(infoCourseDetail));
     }
   }, [infoCourseDetail]);
 
-  const [linkhoc, setLinkhoc] = useState(
-    "https://www.youtube.com/embed?v=f-VsoLm4i5c&list=RDf-VsoLm4i5c&start_radio=1",
-  );
-  const activeId = useSelector((state) => state.blockActive);
-  console.log(activeId);
+  const { type, title, idBlock } = useSelector((state) => state.blockActive);
+  const { data: blockDetail, refetch } = useGetBlockDetail(contentId, idBlock);
+  let blockInstance = blockDetail?.data?.data;
   if (isLoading) {
     return <Loading />;
   }
@@ -46,23 +47,16 @@ const ContentDetail = () => {
         <div className=" grid grid-cols-12 gap-8">
           <div className="col-span-12 lg:col-span-8 space-y-6">
             {/* Breadcrumb */}
-            <nav className="text-xs text-gray-500 space-x-2">
-              <span>Module 3: Advanced Components</span>
-              <span>&gt;</span>
-              <span className="text-gray-300">Lesson 4</span>
-            </nav>
 
             {/* Title */}
-            <h1 className="text-3xl font-bold text-white">
-              Building Glassmorphic UI Systems
-            </h1>
+            <h1 className="text-3xl font-bold text-white">{title}</h1>
 
             {/* Video Block Container - Giữ tỷ lệ khung hình cố định */}
             <div className="aspect-video bg-black rounded-2xl border border-white/10 overflow-hidden relative group">
-              {linkhoc ? (
+              {type == "LINK_BLOCK" ? (
                 <iframe
                   className="w-full h-full"
-                  src={linkhoc}
+                  src={formatYoutubeLink(blockInstance?.textContent)}
                   title="Lesson Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
@@ -77,11 +71,10 @@ const ContentDetail = () => {
 
                   <div className="text-center space-y-2">
                     <p className="text-gray-300 font-medium tracking-wide">
-                      VIDEO NOT FOUND
+                      Nội dung học
                     </p>
                     <p className="text-gray-600 text-xs px-10">
-                      Hệ thống chưa tìm thấy link video cho bài học này. Vui
-                      lòng kiểm tra lại cấu hình bài giảng.
+                      {blockInstance?.textContent}
                     </p>
                   </div>
 
@@ -94,24 +87,6 @@ const ContentDetail = () => {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Nút bấm test nhanh (Xóa đi khi chạy thực tế) */}
-            <div className="flex gap-2">
-              <button
-                onClick={() =>
-                  setLinkhoc("https://www.youtube.com/embed/dQw4w9WgXcQ")
-                }
-                className="px-3 py-1 bg-green-600 text-white text-xs rounded"
-              >
-                Hiện Video
-              </button>
-              <button
-                onClick={() => setLinkhoc(null)}
-                className="px-3 py-1 bg-red-600 text-white text-xs rounded"
-              >
-                Ẩn Video
-              </button>
             </div>
           </div>
           {!isLoading && <ContentPanel />}

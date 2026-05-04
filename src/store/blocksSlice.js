@@ -9,6 +9,7 @@ export const blockSlice = createSlice({
     getDetailCourse: (state, action) => {
       const { id, blocks } = action.payload;
       state.byId[id] = {
+        creatorId: action.payload.creatorId,
         ...blocks,
       };
     },

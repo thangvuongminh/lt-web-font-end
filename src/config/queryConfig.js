@@ -7,6 +7,7 @@ export const QUERY_KEY = {
   getProfile: () => ["profile"],
   getNickname: (nickname) => ["nickname", nickname],
   getContentDetail: (id) => ["content", id],
+  getBlockDetail: (contentId, blockId) => ["block", contentId, blockId],
   // get all content by creator
   getAllContentByCreator: () => ["allContentByCreator"],
 };

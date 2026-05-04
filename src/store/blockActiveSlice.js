@@ -3,14 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 export const blockActive = createSlice({
   name: "blocksActive",
   initialState: {
-    type: "",
-    textContent: "",
+    type: "CONTENT_BLOCK",
+    title: "Please select content to study",
     idBlock: null,
+    contentId: "",
   },
   reducers: {
     setBlockActive: (state, action) => {
       state.type = action.payload.type;
-      state.textContent = action.payload.textContent;
+      state.title = action.payload.title;
       state.idBlock = action.payload.blockActive;
     },
   },
