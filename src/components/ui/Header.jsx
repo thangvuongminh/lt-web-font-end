@@ -11,6 +11,7 @@ import {
   faWallet,
   faSignInAlt,
   faUserPlus,
+  faMoneyBillTransfer,
   faFolderOpen,
   faHistory,
   faLock,
@@ -132,7 +133,16 @@ const Header = () => {
                       />
                       <span>Nạp tiền</span>
                     </Link>
-
+                    <Link
+                      to={"/withdraw"}
+                      className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
+                    >
+                      <FontAwesomeIcon
+                        icon={faMoneyBillTransfer}
+                        className="text-green-500 w-5"
+                      />
+                      <span>Rút tiền</span>
+                    </Link>
                     <Link
                       to={"/cart"}
                       className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors"
@@ -145,7 +155,7 @@ const Header = () => {
                     </Link>
                     {isAppearProfile && (
                       <Link
-                        to={`/user/${data?.data?.data}`}
+                        to={`/user/${data?.data?.data ? data?.data?.data : "update"}`}
                         className="px-4 py-3 hover:bg-gray-800 flex items-center gap-3 transition-colors border-b border-gray-700/50"
                       >
                         <FontAwesomeIcon

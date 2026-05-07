@@ -10,4 +10,8 @@ export const QUERY_KEY = {
   getBlockDetail: (contentId, blockId) => ["block", contentId, blockId],
   // get all content by creator
   getAllContentByCreator: () => ["allContentByCreator"],
+  // get comfirm payment
+  getPaymentConfirm: (params) => ["payment-confirm", params],
+  // wallet
+  getWalletUser: (userId) => ["getWalletUser", userId],
 };

@@ -15,9 +15,12 @@ import notificationAntd from "@/utils/notifications/notificationAntd";
 import { useUpdateProfile } from "@/hooks/useUpdateContent";
 import { useQueryClient } from "react-query";
 import { QUERY_KEY } from "@/config/queryConfig";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditProfile = ({ setEditProfile, userProfile }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { nickname } = useParams();
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       nickName: userProfile?.nickName,
@@ -42,6 +45,9 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
         );
         queryClient.invalidateQueries({ queryKey: QUERY_KEY.getProfile });
         setEditProfile(false);
+        if (nickname === "update") {
+          navigate(`/user/${data.nickName || userProfile?.nickName}`);
+        }
       },
       onError: () => {
         notificationAntd(
@@ -55,7 +61,7 @@ const EditProfile = ({ setEditProfile, userProfile }) => {
 
   return (
     <div className="fixed z-50 inset-0 animate-modal-backdrop bg-black/60 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg animate-modal-content bg-[#161b22] border border-gray-800 rounded-lg shadow-2xl overflow-hidden">
+      <div className="w-full max-h-[90vh] overflow-y-auto max-w-lg animate-modal-content bg-[#161b22] border border-gray-800 rounded-lg shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-6 flex justify-between items-start">
           <div>

@@ -107,3 +107,14 @@ export const COURSE_CREATE_VALIDATE = yup.object({
       ["image/jpeg", "image/png", "image/webp"].includes(value?.[0]?.type),
     ),
 });
+export const paymentSchema = yup.object().shape({
+  total: yup
+    .number()
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    )
+    .nullable()
+    .typeError("Vui lòng nhập một số hợp lệ")
+    .required("Vui lòng nhập số tiền")
+    .min(10000, "Số tiền tối thiểu là 10.000 VNĐ"),
+});

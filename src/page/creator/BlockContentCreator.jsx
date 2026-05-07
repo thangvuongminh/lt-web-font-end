@@ -60,7 +60,23 @@ const BlockContentCreator = () => {
         <div className="h-[0.5px] bg-studyhard/40 w-full"></div>
         <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-8 md:mt-20  ">
           {allContents?.map((content_details, idx) => {
-            return <ContentBlocks data={content_details} key={idx} />;
+            return (
+              // Bọc ContentBlocks và Nút vào một thẻ div flex-col
+              <div key={idx} className="flex flex-col gap-3">
+                <ContentBlocks data={content_details} />
+
+                {/* Hiển thị nút nếu status là DRAFT */}
+                {content_details.status === "DRAFT" && (
+                  <button
+                    onClick={() => handleSendReview(content_details.id)}
+                    className="w-full bg-sky-500 hover:bg-sky-600 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                    Gửi Review
+                  </button>
+                )}
+              </div>
+            );
           })}
         </div>
       </div>

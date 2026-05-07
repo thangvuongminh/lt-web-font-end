@@ -8,5 +8,5 @@ export const useFetchAllProfile = (nickname) =>
     queryFn: async () => {
       return await instance.get(`/profile/nickname/${nickname}`);
     },
-    enabled: !!nickname,
+    enabled: !!nickname && nickname !== "update",
   });

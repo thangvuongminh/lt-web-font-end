@@ -70,7 +70,11 @@ const ProfilePage = () => {
     isLoading: loadingProfile,
     isError,
   } = useFetchAllProfile(nickname);
-  const userProfile = data?.data?.data;
+  const userProfile = data?.data?.data || {};
+
+  if (userProfile && nickname === "update") {
+    userProfile.userId = userId;
+  }
   const fileInputRef = useRef(null);
   const profileData = [
     { label: "Company", value: userProfile?.company },
@@ -122,6 +126,7 @@ const ProfilePage = () => {
             userProfile={userProfile}
           />
         )}
+      {console.log(userProfile)}
       <div className="max-w-6xl mx-auto">
         {/* --- HEADER SECTION --- */}
         <header className="flex flex-col md:flex-row justify-between items-start mb-10 gap-4">

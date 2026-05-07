@@ -21,6 +21,7 @@ import CreateContentCreator from "@/page/creator/CreateContentCreator";
 import ProtectedRouteV2 from "./ProtectedRouteV2";
 import BlockContentCreator from "@/page/creator/BlockContentCreator";
 import ContentDetail from "@/page/home/ContentDetail";
+import Withdraw from "./../page/home/Withdraw";
 const router = createBrowserRouter([
   {
     path: "/about-us",
@@ -116,6 +117,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
       {
         path: "/course/:courseId/lesson/:lessonId",
         element: (
@@ -131,6 +133,14 @@ const router = createBrowserRouter([
             requireRole={["CREATOR", "CONSUMER", "ADMIN", "MODERATOR"]}
           >
             <ChangePassword />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/withdraw",
+        element: (
+          <ProtectedRoute requireRole={["CONSUMER", "CREATOR"]}>
+            <Withdraw />
           </ProtectedRoute>
         ),
       },
