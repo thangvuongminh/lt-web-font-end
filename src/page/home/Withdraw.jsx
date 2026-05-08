@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,16 +10,39 @@ import {
   faHashtag,
   faPen,
 } from "@fortawesome/free-solid-svg-icons";
-// Thay đổi đường dẫn import này cho đúng với vị trí file hook của bạn
 import useGetWallet from "@/hooks/useGetWallet";
+import { usePostWithDrawal } from "@/hooks/usePostWithDrawal";
+import { formatCurrency } from "./../../utils/systems/sysFuc";
+import notificationAntd from "@/utils/notifications/notificationAntd";
+import { useSearchParams } from "react-router-dom";
+import { useGetWithdrawalRequests } from "@/hooks/useGetWithdrawalRequests";
+
+const formatDate = (timestamp) => {
+  if (!timestamp) return null;
+  return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const statusConfig = {
+  PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+  APPROVED: "bg-green-500/10 text-green-400 border-green-500/20",
+  REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
+};
 
 const Withdraw = () => {
-  // Lấy dữ liệu ví từ API
   const { data: walletResponse, isLoading } = useGetWallet();
-  // Giả sử API trả về số dư nằm trong walletResponse.data.balance
-  const availableBalance = walletResponse?.data?.data.balanceInVnd || 0;
+  const [availableBalance, setAvailableBalance] = useState(
+    walletResponse?.data?.data.balanceInVnd || 0,
+  );
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page") ?? 1;
+  const { data: pageWithdraw } = useGetWithdrawalRequests(page);
+  const payoutHistory = pageWithdraw?.data?.data?.content || [];
 
-  // Khởi tạo React Hook Form
   const {
     register,
     handleSubmit,
@@ -35,39 +58,47 @@ const Withdraw = () => {
     },
   });
 
-  // Lắng nghe sự thay đổi của field amount để tính toán Payout
   const watchAmount = watch("amount");
-  const feePercentage = 0.5; // Phí 50%
-
-  // Tính toán số tiền thực nhận (Làm tròn xuống vì VND không có số lẻ)
+  const feePercentage = 0.5;
   const calculatedPayout =
     watchAmount && !isNaN(watchAmount)
       ? Math.floor(Number(watchAmount) * (1 - feePercentage))
       : 0;
 
-  // Hàm xử lý submit form
+  const { mutate } = usePostWithDrawal();
+
   const onSubmit = (data) => {
-    // TODO: Gửi data này lên API tạo request rút tiền
-    console.log("Dữ liệu gửi đi:", data);
+    const dataDto = {
+      bankAccountNumber: data.bank_account_number,
+      bankName: data.bank_name,
+      amount: data.amount,
+      accountHolderName: data.account_holder_name,
+      note: data.note,
+    };
+    mutate(dataDto, {
+      onSuccess: () => {
+        setAvailableBalance(availableBalance - watchAmount);
+        notificationAntd(
+          "success",
+          "Invoice withdrawal created successfully",
+          "Invoice withdrawal created successfully. We will transfer the money once the admin approves it.",
+        );
+      },
+      onError: () => {
+        notificationAntd(
+          "error",
+          "Withdrawal failed",
+          "Withdrawal failed. Please try again later.",
+        );
+      },
+    });
   };
 
-  // Mock data cho lịch sử rút tiền (Đã đổi sang VND)
-  const payoutHistory = [
-    {
-      id: 1,
-      date: "Oct 24, 2023",
-      amount: "1.250.000 VND",
-      method: "Bank Transfer",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      date: "Sep 15, 2023",
-      amount: "3.000.000 VND",
-      method: "Bank Transfer",
-      status: "Completed",
-    },
-  ];
+  useEffect(() => {
+    if (walletResponse) {
+      setAvailableBalance(walletResponse?.data?.data.balanceInVnd || 0);
+    }
+  }, [walletResponse]);
 
   return (
     <div className="min-h-screen bg-[#0b101a] text-white p-6 md:p-10 font-sans">
@@ -82,31 +113,28 @@ const Withdraw = () => {
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* CỘT TRÁI: Số dư & Form Rút tiền */}
+        {/* CỘT TRÁI */}
         <div className="xl:col-span-1 flex flex-col gap-8">
           {/* Card Số dư */}
           <div className="bg-[#131b2f] border border-white/5 rounded-2xl p-6 shadow-lg shadow-black/20 relative overflow-hidden group">
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
-
             <div className="flex items-center gap-2 text-gray-300 font-medium mb-3 text-sm">
               <FontAwesomeIcon icon={faWallet} className="text-gray-400" />
               Available Balance
             </div>
             <div className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300">
-              {isLoading
-                ? "Loading..."
-                : `${availableBalance.toLocaleString("vi-VN")} VND`}
+              {isLoading ? "Loading..." : `${formatCurrency(availableBalance)}`}
             </div>
           </div>
 
-          {/* Card Form Rút tiền */}
+          {/* Form Rút tiền */}
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="bg-[#131b2f] border border-white/5 rounded-2xl p-6 shadow-lg shadow-black/20"
           >
             <h2 className="text-xl font-semibold mb-6">Request Withdrawal</h2>
 
-            {/* Input Amount */}
+            {/* Amount */}
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2 font-medium">
                 Withdrawal Amount (*)
@@ -137,8 +165,6 @@ const Withdraw = () => {
                   VND
                 </span>
               </div>
-
-              {/* Hiển thị lỗi hoặc hiển thị số tiền thực nhận ngay dưới ô nhập */}
               {errors.amount ? (
                 <p className="text-red-400 text-xs mt-1.5">
                   {errors.amount.message}
@@ -147,7 +173,7 @@ const Withdraw = () => {
                 watchAmount &&
                 !isNaN(watchAmount) &&
                 Number(watchAmount) > 0 && (
-                  <p className="text-green-400 text-xs mt-1.5 font-medium transition-all animate-in fade-in">
+                  <p className="text-green-400 text-xs mt-1.5 font-medium">
                     Thực nhận: {calculatedPayout.toLocaleString("vi-VN")} VND
                     (Đã trừ 50% phí)
                   </p>
@@ -155,7 +181,7 @@ const Withdraw = () => {
               )}
             </div>
 
-            {/* Input Bank Name */}
+            {/* Bank Name */}
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2 font-medium">
                 Bank Name (*)
@@ -184,7 +210,7 @@ const Withdraw = () => {
               )}
             </div>
 
-            {/* Input Bank Account Number */}
+            {/* Account Number */}
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2 font-medium">
                 Bank Account Number (*)
@@ -213,7 +239,7 @@ const Withdraw = () => {
               )}
             </div>
 
-            {/* Input Account Holder Name */}
+            {/* Holder Name */}
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2 font-medium">
                 Account Holder Name (*)
@@ -242,7 +268,7 @@ const Withdraw = () => {
               )}
             </div>
 
-            {/* Input Note */}
+            {/* Note */}
             <div className="mb-6">
               <label className="block text-sm text-gray-400 mb-2 font-medium">
                 Note (Optional)
@@ -259,7 +285,7 @@ const Withdraw = () => {
               </div>
             </div>
 
-            {/* Warning Info */}
+            {/* Warning */}
             <div className="bg-red-950/30 border border-red-900/50 rounded-xl p-4 flex items-start gap-3 mb-6">
               <FontAwesomeIcon
                 icon={faInfoCircle}
@@ -271,7 +297,7 @@ const Withdraw = () => {
               </p>
             </div>
 
-            {/* Calculated Payout (Summary) */}
+            {/* Calculated Payout */}
             <div className="flex items-center justify-between border-t border-gray-800 pt-5 mb-6">
               <span className="text-gray-400 text-sm font-medium">
                 Calculated Payout
@@ -281,7 +307,6 @@ const Withdraw = () => {
               </span>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -292,68 +317,104 @@ const Withdraw = () => {
           </form>
         </div>
 
-        {/* CỘT PHẢI: Lịch sử rút tiền */}
+        {/* CỘT PHẢI: Lịch sử */}
         <div className="xl:col-span-2">
           <div className="bg-[#131b2f] border border-white/5 rounded-2xl p-6 shadow-lg shadow-black/20 h-full">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Payout History</h2>
-              <button className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors">
-                View All
-              </button>
-            </div>
+            <h2 className="text-xl font-semibold mb-6">Payout History</h2>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-gray-400 text-sm border-b border-gray-800/50">
-                    <th className="pb-4 font-medium pl-2">Date</th>
-                    <th className="pb-4 font-medium">Amount</th>
-                    <th className="pb-4 font-medium">Method</th>
-                    <th className="pb-4 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payoutHistory.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b border-gray-800/30 hover:bg-white/[0.02] transition-colors"
-                    >
-                      <td className="py-4 pl-2 text-sm text-gray-300">
-                        {item.date}
-                      </td>
-                      <td className="py-4 text-sm font-medium text-white">
-                        {item.amount}
-                      </td>
-                      <td className="py-4 text-sm text-gray-400">
-                        {item.method}
-                      </td>
-                      <td className="py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-                            item.status === "Completed"
-                              ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
-                              : "bg-gray-500/10 text-gray-400 border-gray-500/20"
-                          }`}
-                        >
-                          <FontAwesomeIcon
-                            icon={faCircle}
-                            className={`text-[8px] ${
-                              item.status === "Completed"
-                                ? "text-purple-400"
-                                : "text-gray-400"
-                            }`}
-                          />
-                          {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {payoutHistory.length === 0 && (
+            <div className="flex flex-col gap-4">
+              {payoutHistory.length === 0 ? (
                 <div className="text-center py-10 text-gray-500 text-sm">
                   No payout history found.
                 </div>
+              ) : (
+                payoutHistory.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#0d1424] border border-white/5 rounded-xl p-5 flex flex-col gap-3 hover:border-white/10 transition-all"
+                  >
+                    {/* Row 1: Amount + Status */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold text-white">
+                        {Number(item.amount).toLocaleString("vi-VN")} VND
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
+                          statusConfig[item.status] || statusConfig.PENDING
+                        }`}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCircle}
+                          className="text-[8px]"
+                        />
+                        {item.status}
+                      </span>
+                    </div>
+
+                    {/* Row 2: Bank info */}
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <FontAwesomeIcon
+                        icon={faBuildingColumns}
+                        className="text-gray-600"
+                      />
+                      <span className="text-gray-300 font-medium">
+                        {item.bankName}
+                      </span>
+                      <span className="text-gray-600">•</span>
+                      <span>{item.bankAccountNumber}</span>
+                      <span className="text-gray-600">•</span>
+                      <span className="uppercase">
+                        {item.accountHolderName}
+                      </span>
+                    </div>
+
+                    {/* Row 3: Dates */}
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span>
+                        Created:{" "}
+                        <span className="text-gray-400">
+                          {formatDate(item.createdAt)}
+                        </span>
+                      </span>
+                      {item.reviewedAt && (
+                        <span>
+                          Reviewed:{" "}
+                          <span className="text-gray-400">
+                            {formatDate(item.reviewedAt)}
+                          </span>
+                        </span>
+                      )}
+                      {item.reviewedBy && (
+                        <span>
+                          By:{" "}
+                          <span className="text-gray-400">
+                            {item.reviewedBy}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Row 4: Note + Admin Response */}
+                    {(item.note || item.adminNote) && (
+                      <div className="border-t border-gray-800 pt-3 flex flex-col gap-1.5">
+                        {item.note && (
+                          <p className="text-xs text-gray-500">
+                            Note:{" "}
+                            <span className="text-gray-400">{item.note}</span>
+                          </p>
+                        )}
+                        {item.adminNote && (
+                          <p className="text-xs text-gray-500">
+                            Admin response:{" "}
+                            <span className="text-yellow-400">
+                              {item.adminNote}
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))
               )}
             </div>
           </div>

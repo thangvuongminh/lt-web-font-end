@@ -14,4 +14,6 @@ export const QUERY_KEY = {
   getPaymentConfirm: (params) => ["payment-confirm", params],
   // wallet
   getWalletUser: (userId) => ["getWalletUser", userId],
+  // withdraw
+  getMyWithdraw: (page) => ["withdrawal-my-requests", page],
 };

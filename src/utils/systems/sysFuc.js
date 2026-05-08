@@ -28,3 +28,11 @@ export const formatYoutubeLink = (url) => {
   const videoId = afterV.split("&")[0];
   return `https://www.youtube.com/embed/${videoId}`;
 };
+export const formatDate = (timestamp) => {
+  return new Date(timestamp).toLocaleDateString("en-US", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
