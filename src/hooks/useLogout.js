@@ -17,7 +17,7 @@ export const useLogout = () => {
       );
     },
     onSuccess: () => {
-      navigate("/", { replace: true });
+      navigate("/home", { replace: true });
       setTimeout(() => {
         dispatch(logout());
       }, 100);

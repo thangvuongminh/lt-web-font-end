@@ -22,6 +22,7 @@ import {
 import Loading from "@/components/ui/Loading";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authenticateSlice";
+import { store } from "@/store/store";
 // import { QUERY_PARAM } from "@/hooks/useLoginOauth2Google";
 
 const Login = () => {
@@ -74,9 +75,16 @@ const Login = () => {
         setIsRedirecting(true);
         const data = response.data.data.accessToken;
         dispatch(login(data));
-        setTimeout(() => {
-          navigate("/home");
-        }, 300);
+        const role = store.getState().auth.roles || [];
+        if (role.includes("ADMIN")) {
+          setTimeout(() => {
+            navigate("/admin/dash-board");
+          }, 300);
+        } else {
+          setTimeout(() => {
+            navigate("/home");
+          }, 300);
+        }
       },
     });
   };

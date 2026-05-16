@@ -22,6 +22,9 @@ import ProtectedRouteV2 from "./ProtectedRouteV2";
 import BlockContentCreator from "@/page/creator/BlockContentCreator";
 import ContentDetail from "@/page/home/ContentDetail";
 import Withdraw from "./../page/home/Withdraw";
+import AdminUserManagement from "@/page/admin/AdminUserManagement";
+import AdminFinancials from "@/page/admin/AdminFinancials";
+import AdminLayout from "@/layout/AdminLayout";
 const router = createBrowserRouter([
   {
     path: "/about-us",
@@ -155,6 +158,30 @@ const router = createBrowserRouter([
       {
         path: "/user/:nickname",
         element: <ProfilePage />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminLayout>
+        <ProtectedRoute requireRole={"ADMIN"}>
+          <Outlet />
+        </ProtectedRoute>
+      </AdminLayout>
+    ),
+    children: [
+      {
+        path: "dash-board",
+        element: <AdminUserManagement />,
+      },
+      {
+        path: "manage-user",
+        element: <AdminUserManagement />,
+      },
+      {
+        path: "financial",
+        element: <AdminFinancials />,
       },
     ],
   },

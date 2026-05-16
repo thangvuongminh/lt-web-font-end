@@ -16,4 +16,7 @@ export const QUERY_KEY = {
   getWalletUser: (userId) => ["getWalletUser", userId],
   // withdraw
   getMyWithdraw: (page) => ["withdrawal-my-requests", page],
+  //admin
+  getAllWithdrawPending: () => ["withdrawal-pending"],
+  // get all withdraw
 };

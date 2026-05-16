@@ -70,7 +70,7 @@ const Header = () => {
           <MyNavLink linkChildren={"/home"}>Home</MyNavLink>
           <MyNavLink linkChildren={"/content"}>Content</MyNavLink>
           <MyNavLink>Forum</MyNavLink>
-          {isCreator ? (
+          {!isCreator ? (
             <MyNavLink linkChildren={"/become-creator"}>
               Become-creator
             </MyNavLink>
